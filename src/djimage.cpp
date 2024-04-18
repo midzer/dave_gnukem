@@ -19,7 +19,7 @@ dj2022-11 Note that since we're now on SDL2 we could potentially use e.g. SDLima
 	#ifdef __OS2__
 	#include <SDL/SDL_endian.h>
 	#else
-	#include <SDL_endian.h>
+	//#include <SDL_endian.h>
 	#endif
 /*--------------------------------------------------------------------------*/
 // TGA types

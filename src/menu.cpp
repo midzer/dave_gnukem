@@ -77,7 +77,7 @@ void menu_move( CMenu *pMenu, int& option, int diff, unsigned char cCursor, int 
 	djgDrawImageAlpha( pVisBack, g_pFont8x8, ((int)cCursor%32)*8, ((int)cCursor/32)*8, x, y, 8, 8 );
 }
 /*--------------------------------------------------------------------------*/
-#ifdef __EMSCRIPTEN__
+/*#ifdef __EMSCRIPTEN__
 struct MenuPumpInfo
 {
 	CMenu *pMenu;
@@ -117,17 +117,17 @@ void do_menu_pump()
 			// 'Global' shortcut keys for adjusting volume [dj2016-10]
 
 			// Get localized string for "Volume"
-			const std::string sVolume = pgettext("sound", "Volume");
+			//const std::string sVolume = pgettext("sound", "Volume");
 
 			if (Event.key.keysym.sym==SDLK_7)//SDLK_PAGEUP)
 			{
 				djSoundAdjustVolume(4);
-				SetConsoleMessage(sVolume + ": " + std::to_string(static_cast<int>(100.f * (static_cast<float>(djSoundGetVolume()) / 128.f))));
+				//djConsoleMessage::SetConsoleMessage(sVolume + ": " + std::to_string(static_cast<int>(100.f * (static_cast<float>(djSoundGetVolume()) / 128.f))));
 			}
 			else if (Event.key.keysym.sym==SDLK_6)//SDLK_PAGEDOWN)
 			{
 				djSoundAdjustVolume(-4);
-				SetConsoleMessage(sVolume + ": " + std::to_string(static_cast<int>(100.f * (static_cast<float>(djSoundGetVolume()) / 128.f))));
+				//djConsoleMessage::SetConsoleMessage(sVolume + ": " + std::to_string(static_cast<int>(100.f * (static_cast<float>(djSoundGetVolume()) / 128.f))));
 			}
 			else if (Event.key.keysym.sym==SDLK_INSERT)
 			{
@@ -135,24 +135,24 @@ void do_menu_pump()
 					djSoundDisable();
 				else
 					djSoundEnable();
-				SetConsoleMessage( djSoundEnabled() ? "Sounds ON (Ins)" : "Sounds OFF (Ins)" );
+				//djConsoleMessage::SetConsoleMessage( djSoundEnabled() ? "Sounds ON (Ins)" : "Sounds OFF (Ins)" );
 			}
 
 			// up arrow
 			else if (Event.key.keysym.sym==SDLK_UP)
-				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, -1, *menuPumpInfo.szCursor );
+				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, -1, *menuPumpInfo.szCursor, 0, 0);
 
 			// down arrow
 			else if (Event.key.keysym.sym==SDLK_DOWN)
-				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, 1, *menuPumpInfo.szCursor );
+				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, 1, *menuPumpInfo.szCursor, 0, 0);
 
 			// home key
 			else if (Event.key.keysym.sym==SDLK_HOME)//g_iKeys[DJKEY_HOME])
-				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, -menuPumpInfo.option + menuPumpInfo.pMenu->getSize() - 1, *menuPumpInfo.szCursor );
+				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, -menuPumpInfo.option + menuPumpInfo.pMenu->getSize() - 1, *menuPumpInfo.szCursor, 0, 0);
 
 			// end key
 			else if (Event.key.keysym.sym==SDLK_END)//if (g_iKeys[DJKEY_END])
-				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, -menuPumpInfo.option, *menuPumpInfo.szCursor );
+				menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, -menuPumpInfo.option, *menuPumpInfo.szCursor, 0, 0);
 
 			// enter
 			else if (Event.key.keysym.sym==SDLK_RETURN)//if (g_iKeys[DJKEY_ENTER])
@@ -193,13 +193,13 @@ void do_menu_pump()
 		if (*menuPumpInfo.szCursor == 0)
 			menuPumpInfo.szCursor = menuPumpInfo.pMenu->getMenuCursor ();
 
-		menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, 0, *menuPumpInfo.szCursor );//Force redraw of cursor for animation purposes
+		menu_move( menuPumpInfo.pMenu, menuPumpInfo.option, 0, *menuPumpInfo.szCursor, 0, 0);//Force redraw of cursor for animation purposes
 	}
 
 	GraphFlip(true);
 }
 
-#endif//__EMSCRIPTEN__
+#endif*///__EMSCRIPTEN__
 
 /*--------------------------------------------------------------------------*/
 int do_menu( CMenu *pMenu )
@@ -395,7 +395,7 @@ int do_menu( CMenu *pMenu )
 	menu_move( pMenu, option, 0, *szCursor, iFirstSelectable, iLastSelectable);
 
 
-#ifdef __EMSCRIPTEN__
+/*#ifdef __EMSCRIPTEN__
 	// initialize menu pump
 	menuPumpInfo.pMenu = pMenu;
 	menuPumpInfo.option = option;
@@ -403,12 +403,12 @@ int do_menu( CMenu *pMenu )
 	menuPumpInfo.fTimeNow = menuPumpInfo.fTimeNext;
 	menuPumpInfo.bmenurunning = true;
 	menuPumpInfo.szCursor = szCursor;
-#endif
+#endif*/
 
 
-	#ifndef __EMSCRIPTEN__
+	#ifdef __EMSCRIPTEN__
 	// Wait for user to let go of escape, if he is pressing it
-	djiWaitForKeyUp( DJKEY_ESC );
+	//djiWaitForKeyUp( DJKEY_ESC );
 
 
 
@@ -589,16 +589,16 @@ int do_menu( CMenu *pMenu )
 		GraphFlip(true);
 	} while (bmenurunning);
 	#else//#ifndef __EMSCRIPTEN__
-	emscripten_set_main_loop(do_menu_pump, 30, true);
+	//emscripten_set_main_loop(do_menu_pump, 30, true);
 	#endif
 
 	
 	// Wait for user to let go of escape or enter
-	if (option == -1)
+	/*if (option == -1)
 		djiWaitForKeyUp(DJKEY_ESC);
 	else
 		//this isn't working [anymore?] for redefine keys???
-		djiWaitForKeyUp(DJKEY_ENTER);
+		djiWaitForKeyUp(DJKEY_ENTER);*/
 
 	//Mix_FadeOutChannel(1, 1000);
 

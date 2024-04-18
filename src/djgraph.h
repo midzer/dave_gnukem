@@ -15,7 +15,7 @@ Copyright (C) 1998-2024 David Joffe
 
 #ifdef __EMSCRIPTEN__
 //emsdk ..
-#include <SDL/SDL.h>
+#include <SDL.h>
 #else
 
 //// __has_include is only C++17 or higher

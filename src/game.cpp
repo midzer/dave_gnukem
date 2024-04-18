@@ -1314,10 +1314,15 @@ int game_startup(bool bLoadGame)
 	int iFrameCount=0;
 	int anKeyState[KEY_NUM_MAIN_REDEFINABLE_KEYS] = { 0 };
 	int i;
+	Uint32 newTicks;
+	Uint32 lastTicks;
 	while (g_bGameRunning)
 	{
 		static std::string g_sAutoScreenshotFolder;//<- If !empty it's busy recording into this folder [dj2018-04]
 		static int g_nScreenshotNumber=0;
+
+		// Get ticks
+        newTicks = SDL_GetTicks();
 
 		//debug//printf("{");
 		fTimeNow = djTimeGetTime();
@@ -1330,9 +1335,16 @@ int game_startup(bool bLoadGame)
 			bForceUpdate = true;
 		}
 
+		// Get ticks from last frame and compare with framerate
+        if (newTicks - lastTicks < 60)
+        {
+            SDL_Delay(60 - (newTicks - lastTicks));
+            continue;
+        }
+
 		int iEscape=0;
-		while (fTimeNow<fTimeNext || bForceUpdate) // until we reach next frames time
-		{
+		//while (fTimeNow<fTimeNext || bForceUpdate) // until we reach next frames time
+		//{
 			// Try to prevent this from hogging the CPU, which can adversely affect other processes
 			//dj this #ifdef etc. a bit gross/clunky should we wrap 'SDL_delay' in a simple wrapper functino to deal with emscripted in there in one place application-wide, or what better way? Hm
 			#ifdef __EMSCRIPTEN__
@@ -1775,7 +1787,7 @@ int game_startup(bool bLoadGame)
 
 			fTimeNow = djTimeGetTime();
 			bForceUpdate = false;
-		}
+		//}
 		// FIXME: time next should be calculated more absolutely, not relatively.
 //		fTimeNext = fTimeNow + fTIMEFRAME;
 		fTimeNext = fTimeNext + fTIMEFRAME;
@@ -1949,6 +1961,7 @@ int game_startup(bool bLoadGame)
 				NextLevel();
 			}
 		}
+		lastTicks = newTicks;
 
 	} // while (game running)
 
@@ -2673,7 +2686,7 @@ int GetCurrentLevel()
 void SetLevel(int nLevel)
 {
 	g_nLevel = nLevel;
-	djiWaitForKeyUp( DJKEY_L );
+	//djiWaitForKeyUp( DJKEY_L );
 	if ( g_nLevel >= g_pCurMission->NumLevels() )
 	{
 		// You have finished the game!!! Woohoo!!!!
